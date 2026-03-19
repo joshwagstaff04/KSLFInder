@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KSL Deal Finder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">KSL Deal Finder</div>
+        <h1>Find great deals faster</h1>
+        <p>Set your parameters, run searches fast, auto-refresh, and surface new listings before average browsing catches up.</p>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-card"><small>Status</small><strong id="statusText">Ready</strong></div>
+        <div class="meta-card"><small>Saved searches</small><strong id="savedCount">0</strong></div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel controls">
+        <h2>Search parameters</h2>
+        <form id="searchForm" class="form-grid">
+          <label><span>Keyword</span><input id="keyword" placeholder="toyota tacoma, bike, trailer..." /></label>
+          <label><span>Category</span><input id="category" placeholder="Vehicles, Electronics..." /></label>
+          <label><span>Subcategory</span><input id="subcategory" placeholder="Cars and Trucks, Phones..." /></label>
+          <label><span>Min price</span><input id="minPrice" type="number" min="0" placeholder="0" /></label>
+          <label><span>Max price</span><input id="maxPrice" type="number" min="0" placeholder="5000" /></label>
+          <label><span>Location</span><input id="location" placeholder="Salt Lake City, UT" /></label>
+          <label><span>Sort</span><select id="sort"><option value="0">Relevance/default</option><option value="1">Newest</option><option value="2">Lowest price</option><option value="3">Highest price</option></select></label>
+          <label><span>Results per pull</span><input id="perPage" type="number" min="1" max="96" value="24" /></label>
+          <label><span>Auto-refresh</span><input id="autoRefresh" type="checkbox" /></label>
+          <label><span>Refresh seconds</span><input id="refreshSeconds" type="number" min="10" value="60" /></label>
+          <label><span>Show only new deals</span><input id="alertsOnly" type="checkbox" /></label>
+          <div class="actions full-row">
+            <button type="submit" class="primary">Search KSL</button>
+            <button type="button" id="saveSearchButton">Save search</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel saved">
+        <h2>Saved searches</h2>
+        <div id="savedSearches" class="saved-list"></div>
+      </section>
+
+      <section class="panel saved full-width">
+        <h2>New deal alerts</h2>
+        <div id="alertsBox" class="saved-list"><div class="empty">Run a search to detect new listings.</div></div>
+      </section>
+
+      <section class="panel results full-width">
+        <div class="results-header">
+          <div>
+            <h2>Ranked listings</h2>
+            <p id="searchMeta">No search run yet.</p>
+          </div>
+          <a id="sourceLink" href="#" target="_blank" rel="noreferrer">Open source search</a>
+        </div>
+        <div id="results" class="results-grid">
+          <div class="empty">Run a search to see listings.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

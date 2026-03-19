@@ -1,0 +1,33 @@
+{
+  "listings": {
+    "{\"sort\":\"0\",\"perPage\":\"24\"}": [],
+    "{\"keyword\":\"\",\"category\":\"\",\"subcategory\":\"\",\"minPrice\":\"\",\"maxPrice\":\"\",\"location\":\"\",\"sort\":\"0\",\"perPage\":\"24\"}": [
+      "https://classifieds.ksl.com/listing/80824066",
+      "https://classifieds.ksl.com/listing/80649462",
+      "https://classifieds.ksl.com/listing/80082726",
+      "https://classifieds.ksl.com/listing/80857792",
+      "https://classifieds.ksl.com/listing/80082637",
+      "https://classifieds.ksl.com/listing/80763796",
+      "https://classifieds.ksl.com/listing/76303820",
+      "https://classifieds.ksl.com/listing/79080529",
+      "https://classifieds.ksl.com/listing/80644545",
+      "https://classifieds.ksl.com/listing/79998487",
+      "https://classifieds.ksl.com/listing/80241491"
+    ],
+    "{\"keyword\":\"Toyota, Honda\",\"category\":\"Vehicles\",\"maxPrice\":\"12000\",\"sort\":\"1\",\"perPage\":\"24\"}": [],
+    "{\"keyword\":\"Toyota, Honda\",\"category\":\"Vehicles\",\"maxPrice\":\"12000\",\"sort\":\"2\",\"perPage\":\"24\"}": [],
+    "{\"keyword\":\"Toyota, Honda\",\"category\":\"Vehicles\",\"subcategory\":\"\",\"minPrice\":\"\",\"maxPrice\":\"12000\",\"location\":\"\",\"sort\":\"2\",\"perPage\":\"24\"}": [
+      "https://classifieds.ksl.com/listing/80607596",
+      "https://classifieds.ksl.com/listing/80649462",
+      "https://classifieds.ksl.com/listing/80082726",
+      "https://classifieds.ksl.com/listing/80857792",
+      "https://classifieds.ksl.com/listing/80082637",
+      "https://classifieds.ksl.com/listing/53161394",
+      "https://classifieds.ksl.com/listing/80763796",
+      "https://classifieds.ksl.com/listing/79080529",
+      "https://classifieds.ksl.com/listing/79625044",
+      "https://classifieds.ksl.com/listing/80644545",
+      "https://classifieds.ksl.com/listing/79339540"
+    ]
+  }
+}

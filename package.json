@@ -1,0 +1,13 @@
+{
+  "name": "ksl-finder",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "launch": "zsh ./start.sh",
+    "stop": "zsh ./stop.sh",
+    "watcher": "node watcher.js",
+    "watcher:start": "zsh ./start-watcher.sh",
+    "watcher:stop": "zsh ./stop-watcher.sh"
+  }
+}

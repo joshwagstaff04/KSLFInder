@@ -1,0 +1,15 @@
+{
+  "pollIntervalSeconds": 180,
+  "minAlertScore": 20,
+  "maxAlertsPerCycle": 3,
+  "telegramTarget": "5955220663",
+  "maxPriceHardCap": 10000,
+  "requiredKeywordStrongMatch": false,
+  "blockedTitleTerms": [
+    "service",
+    "dealer",
+    "financing",
+    "call for quote",
+    "wanted"
+  ]
+}

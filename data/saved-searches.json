@@ -1,0 +1,49 @@
+{
+  "searches": [
+    {
+      "id": "search-1773888450943",
+      "name": "Test Search",
+      "params": {
+        "keyword": "",
+        "category": "",
+        "subcategory": "",
+        "minPrice": "",
+        "maxPrice": "",
+        "location": "",
+        "sort": "0",
+        "perPage": "24"
+      },
+      "createdAt": "2026-03-19T02:47:30.943Z"
+    },
+    {
+      "id": "search-1773888810915",
+      "name": "fffff",
+      "params": {
+        "keyword": "",
+        "category": "",
+        "subcategory": "",
+        "minPrice": "",
+        "maxPrice": "",
+        "location": "",
+        "sort": "0",
+        "perPage": "24"
+      },
+      "createdAt": "2026-03-19T02:53:30.915Z"
+    },
+    {
+      "id": "search-1773888894435",
+      "name": "AmandaCar",
+      "params": {
+        "keyword": "Toyota, Honda",
+        "category": "Vehicles",
+        "subcategory": "",
+        "minPrice": "",
+        "maxPrice": "12000",
+        "location": "",
+        "sort": "2",
+        "perPage": "24"
+      },
+      "createdAt": "2026-03-19T02:54:54.435Z"
+    }
+  ]
+}
