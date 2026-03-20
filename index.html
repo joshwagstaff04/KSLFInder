@@ -20,6 +20,20 @@
       </div>
     </header>
 
+    <!-- Tab navigation -->
+    <nav class="tab-bar">
+      <button class="tab active" data-tab="classifieds">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Classifieds
+      </button>
+      <button class="tab" data-tab="cars">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M5 17a2 2 0 01-2-2V9l2.5-5h13L21 9v6a2 2 0 01-2 2M5 17a2 2 0 002 2h1a2 2 0 002-2M14 17a2 2 0 002 2h1a2 2 0 002-2"/><circle cx="7.5" cy="17" r="0"/><circle cx="16.5" cy="17" r="0"/></svg>
+        Cars
+      </button>
+    </nav>
+
+    <!-- ════════ CLASSIFIEDS TAB ════════ -->
+    <div id="tab-classifieds" class="tab-content active">
     <main class="layout">
       <section class="panel controls">
         <h2>Search parameters</h2>
@@ -65,6 +79,145 @@
         </div>
       </section>
     </main>
+    </div>
+
+    <!-- ════════ CARS TAB ════════ -->
+    <div id="tab-cars" class="tab-content">
+    <main class="layout cars-layout">
+      <section class="panel controls">
+        <h2>Car search parameters</h2>
+        <form id="carsSearchForm" class="form-grid form-grid-3">
+          <label><span>Keyword</span><input id="carKeyword" placeholder="4x4, leather, sunroof..." /></label>
+          <label><span>Make</span><select id="carMake">
+            <option value="">Any</option>
+            <option>Acura</option><option>Alfa Romeo</option><option>Aston Martin</option>
+            <option>Audi</option><option>Bentley</option><option>BMW</option><option>Buick</option>
+            <option>Cadillac</option><option>Chevrolet</option><option>Chrysler</option>
+            <option>Dodge</option><option>Ferrari</option><option>Fiat</option><option>Ford</option>
+            <option>Genesis</option><option>GMC</option><option>Honda</option><option>Hyundai</option>
+            <option>Infiniti</option><option>Jaguar</option><option>Jeep</option><option>Kia</option>
+            <option>Lamborghini</option><option>Land Rover</option><option>Lexus</option>
+            <option>Lincoln</option><option>Lotus</option><option>Maserati</option><option>Mazda</option>
+            <option>McLaren</option><option>Mercedes-Benz</option><option>MINI</option>
+            <option>Mitsubishi</option><option>Nissan</option><option>Porsche</option><option>Ram</option>
+            <option>Rivian</option><option>Rolls-Royce</option><option>Subaru</option>
+            <option>Tesla</option><option>Toyota</option><option>Volkswagen</option><option>Volvo</option>
+          </select></label>
+          <label><span>Model</span><input id="carModel" placeholder="Tacoma, Civic, F-150..." /></label>
+          <label><span>Trim</span><input id="carTrim" placeholder="TRD, Sport, Limited..." /></label>
+          <label><span>Year from</span><input id="carYearFrom" type="number" min="1900" max="2027" placeholder="2015" /></label>
+          <label><span>Year to</span><input id="carYearTo" type="number" min="1900" max="2027" placeholder="2026" /></label>
+          <label><span>Price from</span><input id="carPriceFrom" type="number" min="0" placeholder="0" /></label>
+          <label><span>Price to</span><input id="carPriceTo" type="number" min="0" placeholder="50000" /></label>
+          <label><span>Mileage from</span><input id="carMileageFrom" type="number" min="0" placeholder="0" /></label>
+          <label><span>Mileage to</span><input id="carMileageTo" type="number" min="0" placeholder="150000" /></label>
+          <label><span>Body type</span><select id="carBody">
+            <option value="">Any</option>
+            <option value="Sedan">Sedan</option><option value="SUV">SUV</option>
+            <option value="Truck">Truck</option><option value="Coupe">Coupe</option>
+            <option value="Hatchback">Hatchback</option><option value="Van/Minivan">Van / Minivan</option>
+            <option value="Wagon">Wagon</option><option value="Convertible">Convertible</option>
+          </select></label>
+          <label><span>Transmission</span><select id="carTransmission">
+            <option value="">Any</option>
+            <option value="Automatic">Automatic</option>
+            <option value="Manual">Manual</option>
+            <option value="CVT">CVT</option>
+          </select></label>
+          <label><span>Drivetrain</span><select id="carDrive">
+            <option value="">Any</option>
+            <option value="FWD">FWD</option><option value="RWD">RWD</option>
+            <option value="AWD">AWD</option><option value="4WD">4WD</option>
+          </select></label>
+          <label><span>Fuel type</span><select id="carFuel">
+            <option value="">Any</option>
+            <option value="Gasoline">Gasoline</option><option value="Diesel">Diesel</option>
+            <option value="Electric">Electric</option><option value="Hybrid">Hybrid</option>
+            <option value="Plug-In Hybrid">Plug-In Hybrid</option>
+          </select></label>
+          <label><span>Condition</span><select id="carNewUsed">
+            <option value="">Any</option>
+            <option value="Used">Used</option><option value="New">New</option>
+          </select></label>
+          <label><span>Seller type</span><select id="carSellerType">
+            <option value="">Any</option>
+            <option value="Private">Private</option><option value="Dealer">Dealer</option>
+          </select></label>
+          <label><span>Title type</span><select id="carTitleType">
+            <option value="">Any</option>
+            <option value="Clean">Clean</option><option value="Rebuilt/Reconstructed">Rebuilt</option>
+            <option value="Salvage">Salvage</option>
+          </select></label>
+          <label><span>Exterior color</span><select id="carColor">
+            <option value="">Any</option>
+            <option>Black</option><option>Blue</option><option>Brown</option><option>Gold</option>
+            <option>Gray</option><option>Green</option><option>Orange</option><option>Purple</option>
+            <option>Red</option><option>Silver</option><option>White</option><option>Yellow</option>
+          </select></label>
+          <label><span>Doors</span><select id="carDoors">
+            <option value="">Any</option>
+            <option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option>
+          </select></label>
+          <label><span>Cylinders</span><select id="carCylinders">
+            <option value="">Any</option>
+            <option value="3">3</option><option value="4">4</option>
+            <option value="5">5</option><option value="6">6</option>
+            <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+          </select></label>
+          <label><span>ZIP code</span><input id="carZip" type="text" placeholder="84101" /></label>
+          <label><span>Radius (miles)</span><select id="carMiles">
+            <option value="">Any</option>
+            <option value="10">10 mi</option><option value="25">25 mi</option>
+            <option value="50">50 mi</option><option value="100">100 mi</option>
+            <option value="150">150 mi</option><option value="200">200 mi</option>
+            <option value="500">500 mi</option>
+          </select></label>
+          <label><span>Sort</span><select id="carSort">
+            <option value="">Newest to oldest</option>
+            <option value="1">Oldest to newest</option>
+            <option value="2">Price: low to high</option>
+            <option value="3">Price: high to low</option>
+            <option value="4">Year: newest first</option>
+            <option value="5">Year: oldest first</option>
+            <option value="6">Mileage: low to high</option>
+            <option value="7">Mileage: high to low</option>
+          </select></label>
+          <label><span>Results per pull</span><input id="carPerPage" type="number" min="1" max="96" value="24" /></label>
+          <label><span>Auto-refresh</span><input id="carAutoRefresh" type="checkbox" /></label>
+          <label><span>Refresh seconds</span><input id="carRefreshSeconds" type="number" min="10" value="60" /></label>
+          <label><span>Show only new</span><input id="carAlertsOnly" type="checkbox" /></label>
+          <div class="actions full-row">
+            <button type="submit" class="primary">Search KSL Cars</button>
+            <button type="button" id="saveCarSearchButton">Save search</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel saved">
+        <h2>Saved car searches</h2>
+        <div id="carSavedSearches" class="saved-list"></div>
+      </section>
+
+      <section class="panel saved full-width">
+        <h2>New car deal alerts</h2>
+        <div id="carAlertsBox" class="saved-list"><div class="empty">Run a car search to detect new listings.</div></div>
+      </section>
+
+      <section class="panel results full-width">
+        <div class="results-header">
+          <div>
+            <h2>Ranked car listings</h2>
+            <p id="carSearchMeta">No car search run yet.</p>
+          </div>
+          <a id="carSourceLink" href="#" target="_blank" rel="noreferrer">Open KSL Cars search</a>
+        </div>
+        <div id="carResults" class="results-grid car-results-grid">
+          <div class="empty">Run a car search to see listings.</div>
+        </div>
+      </section>
+    </main>
+    </div>
   </div>
   <script src="app.js"></script>
 </body>

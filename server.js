@@ -105,6 +105,99 @@ async function fetchListings(params) {
   return { url, count: listings.length, newCount: newListings.length, listings, newListings };
 }
 
+/* ── KSL Cars helpers ───────────────────────────────────────── */
+
+function buildCarsUrl(params) {
+  // cars.ksl.com uses path-segment style: /search/key/value/key/value
+  const segments = [];
+  const map = {
+    keyword: 'keyword', make: 'make', model: 'model',
+    yearFrom: 'yearFrom', yearTo: 'yearTo',
+    priceFrom: 'priceFrom', priceTo: 'priceTo',
+    mileageFrom: 'mileageFrom', mileageTo: 'mileageTo',
+    body: 'body', transmission: 'transmission', drive: 'drive',
+    fuel: 'fuel', newUsed: 'newUsed', sellerType: 'sellerType',
+    titleType: 'titleType', color: 'color',
+    numberDoors: 'numberDoors', cylinders: 'cylinders',
+    zip: 'zip', miles: 'miles', sort: 'sort', perPage: 'perPage',
+    trim: 'trim',
+  };
+  for (const [param, slug] of Object.entries(map)) {
+    if (params[param]) segments.push(`${slug}/${encodeURIComponent(params[param])}`);
+  }
+  return `https://cars.ksl.com/search/${segments.join('/')}`;
+}
+
+function carDealScore(item, params) {
+  let score = 0;
+  const title = (item.title || '').toLowerCase();
+  const signals = ['must sell', 'obo', 'urgent', 'moving', 'today', 'reduced', 'firm', 'clean title', 'one owner', 'low miles'];
+  if (params.priceTo && item.price && item.price <= Number(params.priceTo)) score += 20;
+  if (item.price && item.price < 5000) score += 10;
+  for (const signal of signals) if (title.includes(signal)) score += 6;
+  if (params.make && title.includes(String(params.make).toLowerCase())) score += 5;
+  if (params.model && title.includes(String(params.model).toLowerCase())) score += 5;
+  if (params.keyword && title.includes(String(params.keyword).toLowerCase())) score += 10;
+  if (item.location) score += 2;
+  return score;
+}
+
+function parseCarListings(html, params, config) {
+  // car listings follow same aria-label / href pattern but link to cars.ksl.com
+  const matches = [...html.matchAll(/<a class="group[\s\S]*?aria-label="([^"]+)"\s+href="(https:\/\/cars\.ksl\.com\/listing\/[0-9]+)"[\s\S]*?aria-label="Price">([^<]+)</g)];
+  const listings = matches.map((m) => {
+    const title = m[1].trim();
+    const url = m[2].trim();
+    const priceText = (m[3] || '').trim();
+    const price = parsePrice(priceText);
+    // try to extract location from nearby markup
+    return { title, url, location: '', priceText, price, score: 0 };
+  });
+  // second pass: pull locations from the city/state spans that follow each listing card
+  const locMatches = [...html.matchAll(/href="https:\/\/cars\.ksl\.com\/listing\/([0-9]+)"[\s\S]*?tabindex="0">([^<]*?)(?:<!-- -->, <!-- -->([^<]*?))?<\/span>/g)];
+  const locMap = {};
+  for (const lm of locMatches) {
+    const id = lm[1];
+    const city = (lm[2] || '').trim();
+    const state = (lm[3] || '').trim();
+    locMap[id] = [city, state].filter(Boolean).join(', ');
+  }
+  for (const item of listings) {
+    const id = item.url.split('/').pop();
+    if (locMap[id]) item.location = locMap[id];
+  }
+
+  const deduped = [];
+  const seen = new Set();
+  for (const item of listings) {
+    if (seen.has(item.url)) continue;
+    seen.add(item.url);
+    item.score = carDealScore(item, params);
+    if (allowedByConfig(item, params, config)) deduped.push(item);
+  }
+  deduped.sort((a, b) => b.score - a.score || (a.price ?? Infinity) - (b.price ?? Infinity));
+  return deduped;
+}
+
+async function fetchCarListings(params) {
+  const config = readJson(CONFIG, { blockedTitleTerms: [] });
+  const url = buildCarsUrl(params);
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    },
+  });
+  const html = await response.text();
+  const listings = parseCarListings(html, params, config);
+  const seen = readSeen();
+  const key = 'cars:' + JSON.stringify(params);
+  const previous = new Set(seen.listings[key] || []);
+  const newListings = listings.filter((item) => !previous.has(item.url));
+  seen.listings[key] = listings.map((item) => item.url);
+  writeSeen(seen);
+  return { url, count: listings.length, newCount: newListings.length, listings, newListings };
+}
+
 function serveStatic(res, pathname) {
   const target = pathname === '/' ? '/index.html' : pathname;
   const filePath = path.join(ROOT, target);
@@ -133,6 +226,16 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 500, { ok: false, error: error.message });
     }
   }
+
+  if (url.pathname === '/api/cars-search' && req.method === 'GET') {
+    try {
+      const params = Object.fromEntries(url.searchParams.entries());
+      const result = await fetchCarListings(params);
+      return sendJson(res, 200, { ok: true, params, ...result });
+    } catch (error) {
+      return sendJson(res, 500, { ok: false, error: error.message });
+    }
+  }
   if (url.pathname === '/api/saved-searches' && req.method === 'GET') return sendJson(res, 200, { ok: true, ...readSaved() });
   if (url.pathname === '/api/saved-searches' && req.method === 'POST') {
     let body = '';
@@ -141,7 +244,7 @@ const server = http.createServer(async (req, res) => {
       try {
         const payload = JSON.parse(body || '{}');
         const saved = readSaved();
-        const entry = { id: `search-${Date.now()}`, name: payload.name || 'Untitled search', params: payload.params || {}, createdAt: new Date().toISOString() };
+        const entry = { id: `search-${Date.now()}`, type: payload.type || 'classifieds', name: payload.name || 'Untitled search', params: payload.params || {}, createdAt: new Date().toISOString() };
         saved.searches.push(entry);
         writeSaved(saved);
         return sendJson(res, 200, { ok: true, entry, searches: saved.searches });

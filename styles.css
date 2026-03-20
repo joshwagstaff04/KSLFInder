@@ -69,4 +69,54 @@ button.primary { background: linear-gradient(135deg, var(--accent), #8574ff); bo
 @media (max-width: 900px) {
   .hero, .layout, .form-grid { grid-template-columns: 1fr; display:grid; }
   .hero { display:grid; }
+  .form-grid-3 { grid-template-columns: 1fr !important; }
+}
+
+/* ── Tabs ──────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 6px;
+}
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.tab.active {
+  background: linear-gradient(135deg, rgba(90,162,255,0.15), rgba(91,226,194,0.10));
+  border-color: rgba(90,162,255,0.3);
+  color: var(--accent);
+}
+.tab svg { flex-shrink: 0; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Cars-specific ─────────────────────────────────────────── */
+.form-grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+
+.cars-layout { grid-template-columns: 1.5fr .5fr; }
+
+.car-card { border-left: 3px solid var(--accent); }
+
+.car-results-grid {
+  display: grid;
+  gap: 12px;
 }

@@ -85,6 +85,83 @@ async function fetchListings(params, config) {
   return { url, listings: parseListings(html, params, config) };
 }
 
+/* ── KSL Cars helpers ───────────────────────────────────────── */
+
+function buildCarsUrl(params) {
+  const segments = [];
+  const map = {
+    keyword: 'keyword', make: 'make', model: 'model',
+    yearFrom: 'yearFrom', yearTo: 'yearTo',
+    priceFrom: 'priceFrom', priceTo: 'priceTo',
+    mileageFrom: 'mileageFrom', mileageTo: 'mileageTo',
+    body: 'body', transmission: 'transmission', drive: 'drive',
+    fuel: 'fuel', newUsed: 'newUsed', sellerType: 'sellerType',
+    titleType: 'titleType', color: 'color',
+    numberDoors: 'numberDoors', cylinders: 'cylinders',
+    zip: 'zip', miles: 'miles', sort: 'sort', perPage: 'perPage',
+    trim: 'trim',
+  };
+  for (const [param, slug] of Object.entries(map)) {
+    if (params[param]) segments.push(`${slug}/${encodeURIComponent(params[param])}`);
+  }
+  return `https://cars.ksl.com/search/${segments.join('/')}`;
+}
+
+function carDealScore(item, params) {
+  let score = 0;
+  const title = (item.title || '').toLowerCase();
+  const signals = ['must sell', 'obo', 'urgent', 'moving', 'today', 'reduced', 'firm', 'clean title', 'one owner', 'low miles'];
+  if (params.priceTo && item.price && item.price <= Number(params.priceTo)) score += 20;
+  if (item.price && item.price < 5000) score += 10;
+  for (const signal of signals) if (title.includes(signal)) score += 6;
+  if (params.make && title.includes(String(params.make).toLowerCase())) score += 5;
+  if (params.model && title.includes(String(params.model).toLowerCase())) score += 5;
+  if (params.keyword && title.includes(String(params.keyword).toLowerCase())) score += 10;
+  if (item.location) score += 2;
+  return score;
+}
+
+function parseCarListings(html, params, config) {
+  const matches = [...html.matchAll(/<a class="group[\s\S]*?aria-label="([^"]+)"\s+href="(https:\/\/cars\.ksl\.com\/listing\/[0-9]+)"[\s\S]*?aria-label="Price">([^<]+)/g)];
+  const listings = matches.map((m) => {
+    const title = m[1].trim();
+    const url = m[2].trim();
+    const priceText = (m[3] || '').trim();
+    const price = parsePrice(priceText);
+    return { title, url, location: '', priceText, price, score: 0 };
+  });
+  const locMatches = [...html.matchAll(/href="https:\/\/cars\.ksl\.com\/listing\/([0-9]+)"[\s\S]*?tabindex="0">([^<]*?)(?:<!-- -->, <!-- -->([^<]*?))?<\/span>/g)];
+  const locMap = {};
+  for (const lm of locMatches) {
+    const id = lm[1];
+    const city = (lm[2] || '').trim();
+    const state = (lm[3] || '').trim();
+    locMap[id] = [city, state].filter(Boolean).join(', ');
+  }
+  for (const item of listings) {
+    const id = item.url.split('/').pop();
+    if (locMap[id]) item.location = locMap[id];
+  }
+  const seen = new Set();
+  return listings.filter((item) => {
+    if (seen.has(item.url)) return false;
+    seen.add(item.url);
+    item.score = carDealScore(item, params);
+    return allowedByConfig(item, params, config);
+  }).sort((a, b) => b.score - a.score || (a.price ?? Infinity) - (b.price ?? Infinity));
+}
+
+async function fetchCarListings(params, config) {
+  const url = buildCarsUrl(params);
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    },
+  });
+  const html = await response.text();
+  return { url, listings: parseCarListings(html, params, config) };
+}
+
 function sendTelegram(message, target) {
   return new Promise((resolve) => {
     execFile('openclaw', ['message', 'send', '--channel', 'telegram', '--target', target, '--message', message], { timeout: 30000, maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
@@ -102,16 +179,20 @@ async function runCycle() {
 
   for (const search of saved.searches) {
     try {
-      const result = await fetchListings(search.params || {}, config);
-      const key = JSON.stringify(search.params || {});
+      const isCar = (search.type === 'cars');
+      const result = isCar
+        ? await fetchCarListings(search.params || {}, config)
+        : await fetchListings(search.params || {}, config);
+      const key = (isCar ? 'cars:' : '') + JSON.stringify(search.params || {});
       const prior = new Set(seen.listings[key] || []);
       const fresh = result.listings.filter((item) => !prior.has(item.url));
       seen.listings[key] = result.listings.map((item) => item.url);
       const alerts = fresh.filter((item) => item.score >= config.minAlertScore).slice(0, config.maxAlertsPerCycle);
 
       for (const item of alerts) {
+        const emoji = isCar ? '🚗' : '🔥';
         const msg = [
-          `🔥 New KSL deal match: ${search.name}`,
+          `${emoji} New KSL ${isCar ? 'car' : 'deal'} match: ${search.name}`,
           `${item.title}`,
           `${item.priceText || 'No price'} · ${item.location || 'Unknown location'}`,
           `Score: ${item.score}`,
